@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioNexus — A-Level Biology Practice Platform</title>
+    <meta name="description" content="BioNexus: Master A-Level Biology with adaptive practice questions drawn from real past papers. Track your progress and conquer your exams.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="res/css/style.css">
+</head>
+<body>
+
+    <!-- ===================== Background Elements ===================== -->
+    <div class="bg-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+
+        <!-- Floating bioluminescent particles -->
+        <div class="dna-particles" id="dna-particles"></div>
+
+        <!-- Decorative SVG DNA Helix (right side) -->
+        <svg class="dna-helix" viewBox="0 0 60 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+                <linearGradient id="helixGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%"   stop-color="#00ff88" stop-opacity="0.6"/>
+                    <stop offset="50%"  stop-color="#00d4aa" stop-opacity="0.4"/>
+                    <stop offset="100%" stop-color="#00ff88" stop-opacity="0.6"/>
+                </linearGradient>
+            </defs>
+            <!-- Strand 1 -->
+            <path d="M10,0 Q50,50 10,100 Q-30,150 10,200 Q50,250 10,300 Q-30,350 10,400"
+                  stroke="url(#helixGrad)" stroke-width="1.5" fill="none"/>
+            <!-- Strand 2 -->
+            <path d="M50,0 Q10,50 50,100 Q90,150 50,200 Q10,250 50,300 Q90,350 50,400"
+                  stroke="url(#helixGrad)" stroke-width="1.5" fill="none"/>
+            <!-- Rungs -->
+            <line x1="10"  y1="25"  x2="50"  y2="25"  stroke="rgba(0,255,136,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="75"  x2="50"  y2="75"  stroke="rgba(0,212,170,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="125" x2="50"  y2="125" stroke="rgba(0,255,136,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="175" x2="50"  y2="175" stroke="rgba(0,212,170,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="225" x2="50"  y2="225" stroke="rgba(0,255,136,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="275" x2="50"  y2="275" stroke="rgba(0,212,170,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="325" x2="50"  y2="325" stroke="rgba(0,255,136,0.25)" stroke-width="1"/>
+            <line x1="10"  y1="375" x2="50"  y2="375" stroke="rgba(0,212,170,0.25)" stroke-width="1"/>
+        </svg>
+    </div>
+
+    <!-- ===================== Header / Nav ===================== -->
+    <header class="glass-panel">
+        <div class="logo">
+            <div class="logo-icon-wrap">
+                <i class="fa-solid fa-dna"></i>
+            </div>
+            <div class="logo-text-wrap">
+                <span class="logo-name">BIONEXUS</span>
+                <span class="logo-tagline">A-Level Biology</span>
+            </div>
+        </div>
+        <nav>
+            <button id="nav-home" class="nav-btn active">
+                <i class="fa-solid fa-flask-vial"></i> Lab
+            </button>
+            <button id="nav-scoreboard" class="nav-btn">
+                <i class="fa-solid fa-chart-line"></i> Analytics
+            </button>
+        </nav>
+    </header>
+
+    <!-- ===================== Main App ===================== -->
+    <main id="app-container">
+
+        <!-- Loading Screen -->
+        <section id="screen-loading" class="screen active">
+            <div class="loader-container">
+                <div class="spinner"></div>
+                <h2>SEQUENCING DATA...</h2>
+                <div class="bio-accent-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <p>Loading question databank</p>
+            </div>
+        </section>
+
+        <!-- Filter Screen (Home / Lab) -->
+        <section id="screen-filter" class="screen glass-panel">
+            <div class="header-content">
+                <h1>Configure Lab Session</h1>
+                <p>Select your parameters to begin the practice simulation.</p>
+                <div class="bio-accent-dots" style="justify-content:center;">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="filter-grid">
+                <div class="filter-group card-3d">
+                    <label><i class="fa-regular fa-calendar-days"></i> Examination Years</label>
+                    <div id="filter-years" class="checkbox-grid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-group card-3d">
+                    <label><i class="fa-solid fa-microscope"></i> Competency Levels</label>
+                    <div id="filter-competencies" class="checkbox-grid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-group card-3d">
+                    <label><i class="fa-solid fa-list-ol"></i> Number of Questions</label>
+                    <div class="range-container">
+                        <input type="range" id="filter-count" min="1" max="100" value="10">
+                        <span id="filter-count-display" class="neon-text mono">10</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-footer">
+                <div class="stats-preview" id="stats-preview">
+                    <i class="fa-solid fa-vials"></i>
+                    Matching Specimens: <span class="neon-text" id="matching-count">0</span>
+                </div>
+                <button id="btn-start-quiz" class="btn-primary glow-btn" disabled>
+                    <i class="fa-solid fa-play"></i> Begin Session
+                </button>
+            </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section id="screen-quiz" class="screen">
+            <div class="quiz-header glass-panel">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="quiz-progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="quiz-question-number">Question 1 of 10</span>
+                        <span id="quiz-time-elapsed" class="mono">00:00</span>
+                    </div>
+                </div>
+                <div class="meta-badges">
+                    <span id="meta-year" class="badge badge-cyan"></span>
+                    <span id="meta-competency" class="badge badge-purple"></span>
+                </div>
+            </div>
+
+            <div class="question-container glass-panel">
+                <h2 id="quiz-question-text" class="question-text"></h2>
+                <div id="quiz-options" class="options-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="quiz-controls">
+                <button id="btn-prev-question" class="btn-secondary" style="visibility: hidden;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </button>
+
+                <div id="quiz-feedback" class="feedback-panel hidden">
+                    <div class="feedback-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="feedback-content">
+                        <h4 id="feedback-title">Correct</h4>
+                        <p id="feedback-desc">Optimal answer selected.</p>
+                    </div>
+                </div>
+
+                <button id="btn-submit-answer" class="btn-primary glow-btn">
+                    Submit <i class="fa-solid fa-check-double"></i>
+                </button>
+                <button id="btn-next-question" class="btn-primary glow-btn hidden">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="screen-result" class="screen glass-panel">
+            <div class="result-header">
+                <h1>Analysis Complete</h1>
+                <p>Reviewing your performance metrics...</p>
+                <div class="bio-accent-dots" style="justify-content:center; margin-top:0.5rem;">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="score-circle-container">
+                <svg class="score-circle" viewBox="0 0 100 100">
+                    <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                    <circle class="circle-progress" id="result-circle" cx="50" cy="50" r="45"></circle>
+                </svg>
+                <div class="score-content">
+                    <span id="result-percentage" class="neon-text-large">0%</span>
+                    <span class="muted mono" style="font-size:0.75rem; margin-top:0.25rem;">ACCURACY</span>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon cyan"><i class="fa-solid fa-bullseye"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Total Score</span>
+                        <span id="result-score" class="metric-value">0 / 0</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon green"><i class="fa-solid fa-check"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Correct</span>
+                        <span id="result-correct" class="metric-value">0</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon red"><i class="fa-solid fa-xmark"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Incorrect</span>
+                        <span id="result-incorrect" class="metric-value">0</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon teal"><i class="fa-regular fa-clock"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Time Elapsed</span>
+                        <span id="result-time" class="metric-value mono">00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-footer result-actions">
+                <button id="btn-review" class="btn-secondary">
+                    <i class="fa-solid fa-microscope"></i> Review Answers
+                </button>
+                <button id="btn-restart" class="btn-primary glow-btn">
+                    <i class="fa-solid fa-rotate-right"></i> New Session
+                </button>
+            </div>
+        </section>
+
+        <!-- Review Screen -->
+        <section id="screen-review" class="screen glass-panel">
+            <div class="header-content review-header">
+                <button id="btn-back-result" class="icon-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1>Session Review</h1>
+                <div class="review-filters">
+                    <button class="review-filter-btn active" data-filter="all">All</button>
+                    <button class="review-filter-btn" data-filter="incorrect">Incorrect Only</button>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="review-search" placeholder="Search questions by keyword...">
+            </div>
+
+            <div id="review-list" class="review-list">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- Scoreboard / Analytics Screen -->
+        <section id="screen-scoreboard" class="screen glass-panel">
+            <div class="header-content">
+                <h1>Analytics Dashboard</h1>
+                <p>Global statistics and performance history.</p>
+                <div class="bio-accent-dots" style="justify-content:center;">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="stats-overview">
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="stat-value neon-text" id="stat-best-score">0%</div>
+                    <div class="stat-label">Best Accuracy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="stat-value neon-text" id="stat-avg-score">0%</div>
+                    <div class="stat-label">Avg Accuracy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                    <div class="stat-value neon-text" id="stat-total-questions">0</div>
+                    <div class="stat-label">Questions Answered</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                    <div class="stat-value neon-text" id="stat-total-time">0m</div>
+                    <div class="stat-label">Time Spent</div>
+                </div>
+            </div>
+
+            <div class="recent-sessions">
+                <h3><i class="fa-solid fa-clock-rotate-left" style="margin-right:0.5rem;"></i>Recent Sessions</h3>
+                <div class="sessions-list" id="sessions-list">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-dna" style="font-size:2rem; opacity:0.2; display:block; margin-bottom:0.75rem;"></i>
+                        No sessions recorded yet.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Error Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script>
+        // Generate floating bioluminescent particles
+        (function() {
+            const container = document.getElementById('dna-particles');
+            if (!container) return;
+            const colors = ['#00ff88','#00d4aa','#aaff00','#00aaff'];
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'dna-particle';
+                const size = Math.random() * 4 + 2;
+                p.style.cssText = `
+                    width:${size}px;
+                    height:${size}px;
+                    left:${Math.random()*100}%;
+                    top:${Math.random()*100}%;
+                    background:${colors[Math.floor(Math.random()*colors.length)]};
+                    animation-duration:${Math.random()*10+8}s;
+                    animation-delay:${Math.random()*10}s;
+                    box-shadow: 0 0 ${size*3}px currentColor;
+                `;
+                container.appendChild(p);
+            }
+        })();
+    </script>
+    <script src="res/data/quiz.js"></script>
+    <script src="res/js/app.js"></script>
+</body>
+</html>
